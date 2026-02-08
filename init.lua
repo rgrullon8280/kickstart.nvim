@@ -430,6 +430,14 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       vim.keymap.set('n', '<leader>fw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>fs', builtin.live_grep, { desc = '[S]earch by [G]rep' })
+      vim.keymap.set('n', '<leader>fS', function()
+        local glob = vim.fn.input 'Glob filter: '
+        vim.cmd 'redraw'
+        if glob ~= '' then
+          builtin.live_grep { additional_args = { '-g', glob } }
+        end
+      end, { desc = 'Live grep with glob filter' })
+      vim.keymap.set('n', '<leader>r', ':%s/<C-r><C-w>/<C-r><C-w>/g<Left><Left>', { desc = 'Replace word under cursor' })
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
@@ -746,7 +754,7 @@ require('lazy').setup({
     cmd = { 'ConformInfo' },
     keys = {
       {
-        '<leader>f',
+        '<leader>p',
         function()
           require('conform').format { async = true, lsp_format = 'fallback' }
         end,

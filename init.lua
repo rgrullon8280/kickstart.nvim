@@ -439,13 +439,16 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>gb', builtin.git_branches, { desc = '[G]it [B]ranches' })
 
       -- Slightly advanced example of overriding default behavior and theme
-      vim.keymap.set('n', '<leader>/', function()
+      vim.keymap.set('n', '<leader>F', function()
         -- You can pass additional configuration to Telescope to change the theme, layout, etc.
         builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
           winblend = 10,
           previewer = false,
         })
-      end, { desc = '[/] Fuzzily search in current buffer' })
+      end, { desc = '[F] Fuzzily search in current buffer' })
+
+      vim.keymap.set('n', '<leader>/', 'gcc', { remap = true, desc = 'Toggle comment' })
+      vim.keymap.set('v', '<leader>/', 'gc', { remap = true, desc = 'Toggle comment' })
 
       -- It's also possible to pass additional configuration options.
       --  See `:help telescope.builtin.live_grep()` for information about particular keys

@@ -434,6 +434,9 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+      vim.keymap.set('n', '<leader>gc', builtin.git_commits, { desc = '[G]it [C]ommits' })
+      vim.keymap.set('n', '<leader>gs', builtin.git_status, { desc = '[G]it [S]tatus' })
+      vim.keymap.set('n', '<leader>gb', builtin.git_branches, { desc = '[G]it [B]ranches' })
 
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
@@ -807,6 +810,22 @@ require('lazy').setup({
         opts = {},
       },
       'folke/lazydev.nvim',
+      {
+        'Exafunction/codeium.nvim',
+        dependencies = { 'nvim-lua/plenary.nvim' },
+        opts = {
+          enable_cmp_source = false,
+          virtual_text = {
+            enabled = true,
+            key_bindings = {
+              accept = '<Tab>',
+              next = '<C-k>',
+              prev = '<C-l>',
+              clear = '<C-]>',
+            },
+          },
+        },
+      },
     },
     --- @module 'blink.cmp'
     --- @type blink.cmp.Config
@@ -833,8 +852,7 @@ require('lazy').setup({
         -- <c-k>: Toggle signature help
         --
         -- See :h blink-cmp-config-keymap for defining your own keymap
-        ['<c-l'] = { 'select_prev', 'fallback' },
-        ['<c-k>'] = { 'select_next', 'fallback' },
+        preset = 'enter',
 
         -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
         --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
@@ -853,9 +871,10 @@ require('lazy').setup({
       },
 
       sources = {
-        default = { 'lsp', 'path', 'snippets', 'lazydev' },
+        default = { 'lsp', 'path', 'snippets', 'lazydev', 'codeium' },
         providers = {
           lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
+          codeium = { name = 'codeium', module = 'codeium.blink', async = true },
         },
       },
 
@@ -899,6 +918,28 @@ require('lazy').setup({
 
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
+
+  { -- Toggleable terminal
+    'akinsho/toggleterm.nvim',
+    version = '*',
+    keys = {
+      { '<C-t>', '<cmd>ToggleTerm direction=horizontal<CR>', desc = 'Toggle terminal' },
+      { '<C-t>', '<cmd>ToggleTerm<CR>', mode = 't', desc = 'Toggle terminal' },
+    },
+    opts = {
+      size = 15,
+      shade_terminals = true,
+    },
+  },
+
+  { -- Open current file/line on GitHub
+    'linrongbin16/gitlinker.nvim',
+    keys = {
+      { '<leader>gy', '<cmd>GitLink<CR>', mode = { 'n', 'v' }, desc = 'Copy [G]itHub link to clipboard' },
+      { '<leader>gB', '<cmd>GitLink!<CR>', mode = { 'n', 'v' }, desc = 'Open in [G]itHub [B]rowser' },
+    },
+    opts = {},
+  },
 
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
@@ -976,7 +1017,26 @@ require('lazy').setup({
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
   require 'kickstart.plugins.autopairs',
-  require 'kickstart.plugins.neo-tree',
+  -- require 'kickstart.plugins.neo-tree',
+
+  { -- File explorer that lets you edit the filesystem like a buffer
+    'stevearc/oil.nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    lazy = false,
+    keys = {
+      { '-', '<cmd>Oil<CR>', desc = 'Open parent directory' },
+    },
+    opts = {
+      default_file_explorer = true,
+      columns = { 'icon' },
+      view_options = {
+        show_hidden = true,
+      },
+      keymaps = {
+        ['q'] = 'actions.close',
+      },
+    },
+  },
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`

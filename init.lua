@@ -169,7 +169,7 @@ vim.opt.confirm = true
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 -- Diagnostic keymaps
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+vim.keymap.set('n', '<leader>Q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -217,6 +217,41 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
   callback = function()
     vim.highlight.on_yank()
+  end,
+})
+
+-- Toggle quickfix list
+vim.keymap.set('n', '<leader>qf', function()
+  local qf_open = false
+  for _, win in ipairs(vim.fn.getwininfo()) do
+    if win.quickfix == 1 then
+      qf_open = true
+      break
+    end
+  end
+  if qf_open then
+    vim.cmd 'cclose'
+  else
+    vim.cmd 'copen'
+  end
+end, { desc = 'Toggle [Q]uick[F]ix list' })
+
+-- Remove item from quickfix list with dd
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'qf',
+  callback = function()
+    vim.keymap.set('n', 'dd', function()
+      local curqfidx = vim.fn.line '.' - 1
+      local qfall = vim.fn.getqflist()
+      table.remove(qfall, curqfidx + 1)
+      vim.fn.setqflist(qfall, 'r')
+      if #qfall == 0 then
+        vim.cmd 'cclose'
+      else
+        vim.cmd(math.min(curqfidx + 1, #qfall) .. 'cfirst')
+        vim.cmd 'copen'
+      end
+    end, { buffer = true })
   end,
 })
 
@@ -821,22 +856,22 @@ require('lazy').setup({
         opts = {},
       },
       'folke/lazydev.nvim',
-      {
-        'Exafunction/codeium.nvim',
-        dependencies = { 'nvim-lua/plenary.nvim' },
-        opts = {
-          enable_cmp_source = false,
-          virtual_text = {
-            enabled = true,
-            key_bindings = {
-              accept = '<Tab>',
-              next = '<C-k>',
-              prev = '<C-l>',
-              clear = '<C-]>',
-            },
-          },
-        },
-      },
+      -- {
+      --   'Exafunction/codeium.nvim',
+      --   dependencies = { 'nvim-lua/plenary.nvim' },
+      --   opts = {
+      --     enable_cmp_source = false,
+      --     virtual_text = {
+      --       enabled = true,
+      --       key_bindings = {
+      --         accept = '<Tab>',
+      --         next = '<C-k>',
+      --         prev = '<C-l>',
+      --         clear = '<C-]>',
+      --       },
+      --     },
+      --   },
+      -- },
     },
     --- @module 'blink.cmp'
     --- @type blink.cmp.Config
@@ -882,10 +917,9 @@ require('lazy').setup({
       },
 
       sources = {
-        default = { 'lsp', 'path', 'snippets', 'lazydev', 'codeium' },
+        default = { 'lsp', 'path', 'snippets', 'lazydev' },
         providers = {
           lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
-          codeium = { name = 'codeium', module = 'codeium.blink', async = true },
         },
       },
 
@@ -918,6 +952,10 @@ require('lazy').setup({
         styles = {
           comments = { italic = false }, -- Disable italics in comments
         },
+        on_highlights = function(hl)
+          hl.LineNrAbove = { fg = '#c0caf5' }
+          hl.LineNrBelow = { fg = '#c0caf5' }
+        end,
       }
 
       -- Load the colorscheme here.

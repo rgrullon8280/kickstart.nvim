@@ -1100,6 +1100,55 @@ require('lazy').setup({
     opts = {},
   },
 
+  { -- Quick file navigation: mark and jump between files
+    'ThePrimeagen/harpoon',
+    branch = 'harpoon2',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    config = function()
+      local harpoon = require 'harpoon'
+      harpoon:setup()
+
+      vim.keymap.set('n', '<leader>a', function() harpoon:list():add() end, { desc = 'Harpoon [A]dd file' })
+      vim.keymap.set('n', '<leader>h', function()
+        local win = vim.api.nvim_get_current_win()
+        local buf = vim.api.nvim_win_get_buf(win)
+        local bufname = vim.api.nvim_buf_get_name(buf)
+        if bufname:match '__harpoon%-menu__' then
+          vim.cmd 'wq'
+        else
+          harpoon.ui:toggle_quick_menu(harpoon:list())
+        end
+      end, { desc = '[H]arpoon menu' })
+
+      vim.keymap.set('n', '<leader>1', function() harpoon:list():select(1) end, { desc = 'Harpoon file [1]' })
+      vim.keymap.set('n', '<leader>2', function() harpoon:list():select(2) end, { desc = 'Harpoon file [2]' })
+      vim.keymap.set('n', '<leader>3', function() harpoon:list():select(3) end, { desc = 'Harpoon file [3]' })
+      vim.keymap.set('n', '<leader>4', function() harpoon:list():select(4) end, { desc = 'Harpoon file [4]' })
+    end,
+  },
+
+  { -- Visualize and navigate undo history as a tree
+    'mbbill/undotree',
+    keys = {
+      { '<leader>u', '<cmd>UndotreeToggle<CR>', desc = '[U]ndotree toggle' },
+    },
+  },
+
+  { -- GitHub Copilot: AI autocomplete with ghost text
+    'github/copilot.vim',
+    event = 'InsertEnter',
+    config = function()
+      -- Ghost text is enabled by default in copilot.vim
+      -- Tab to accept is the default keybinding
+      -- Disable copilot's default Tab mapping so we can set it explicitly
+      vim.g.copilot_no_tab_map = true
+      vim.keymap.set('i', '<Tab>', 'copilot#Accept("\\<Tab>")', { expr = true, replace_keycodes = false, desc = 'Accept Copilot suggestion' })
+      vim.keymap.set('i', '<C-]>', '<Plug>(copilot-dismiss)', { desc = 'Dismiss Copilot suggestion' })
+      vim.keymap.set('i', '<C-j>', '<Plug>(copilot-next)', { desc = 'Next Copilot suggestion' })
+      vim.keymap.set('i', '<C-k>', '<Plug>(copilot-previous)', { desc = 'Previous Copilot suggestion' })
+    end,
+  },
+
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`

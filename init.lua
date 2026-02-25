@@ -161,6 +161,9 @@ vim.opt.scrolloff = 10
 -- See `:help 'confirm'`
 vim.opt.confirm = true
 
+-- Automatically reload files when changed externally (e.g. after git pull)
+vim.opt.autoread = true
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -208,6 +211,11 @@ vim.keymap.set('v', '<leader>y', '"+y')
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
+
+-- Check for file changes when Neovim regains focus or you switch buffers
+vim.api.nvim_create_autocmd({ 'FocusGained', 'BufEnter' }, {
+  command = 'checktime',
+})
 
 -- Highlight when yanking (copying) text
 --  Try it with `yap` in normal mode
@@ -447,6 +455,9 @@ require('lazy').setup({
         -- },
         -- pickers = {}
         extensions = {
+          fzf = {
+            case_mode = 'ignore_case',
+          },
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
           },
@@ -723,8 +734,23 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         clangd = {},
-        gopls = {},
-        pyright = {},
+        gopls = {
+          settings = {
+            gopls = {
+              ['build.buildFlags'] = { '-mod=readonly' },
+            },
+          },
+        },
+        pyright = {
+          settings = {
+            python = {
+              analysis = {
+                diagnosticMode = 'workspace',
+              },
+            },
+          },
+        },
+        sqls = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --

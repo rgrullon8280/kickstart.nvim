@@ -451,6 +451,23 @@ require('lazy').setup({
           path_display = { 'truncate' },
           mappings = {
             i = { ['<c-enter>'] = 'to_fuzzy_refine' },
+            n = {
+              ['<leader>yp'] = function(prompt_bufnr)
+                local entry = require('telescope.actions.state').get_selected_entry()
+                if entry and entry.path then
+                  vim.fn.setreg('+', entry.path)
+                  vim.notify('Yanked path: ' .. entry.path)
+                end
+              end,
+              ['<leader>yf'] = function(prompt_bufnr)
+                local entry = require('telescope.actions.state').get_selected_entry()
+                if entry and entry.path then
+                  local name = vim.fn.fnamemodify(entry.path, ':t:r')
+                  vim.fn.setreg('+', name)
+                  vim.notify('Yanked name: ' .. name)
+                end
+              end,
+            },
           },
         },
         extensions = {

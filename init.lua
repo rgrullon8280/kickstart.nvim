@@ -472,6 +472,9 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>fk', builtin.keymaps, { desc = '[F]ind [K]eymaps' })
       vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = '[S]earch [F]iles' })
+      vim.keymap.set('n', '<leader>fF', function()
+        builtin.find_files { default_text = vim.fn.expand '<cword>' }
+      end, { desc = '[F]ind [F]iles by word under cursor' })
       vim.keymap.set('n', '<leader>fA', function()
         builtin.find_files { hidden = true, no_ignore = true }
       end, { desc = 'Search [A]ll files (including hidden/ignored)' })

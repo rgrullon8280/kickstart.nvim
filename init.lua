@@ -519,6 +519,32 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>gs', builtin.git_status, { desc = '[G]it [S]tatus' })
       vim.keymap.set('n', '<leader>gb', builtin.git_branches, { desc = '[G]it [B]ranches' })
       vim.keymap.set('n', '<leader>gtb', '<cmd>Gitsigns toggle_current_line_blame<CR>', { desc = '[G]it [T]oggle [B]lame' })
+      vim.keymap.set('n', '<leader>gf', function()
+        local merge_base = vim.fn.systemlist('git merge-base HEAD main')[1]
+        if vim.v.shell_error ~= 0 then
+          merge_base = vim.fn.systemlist('git merge-base HEAD master')[1]
+        end
+        if vim.v.shell_error ~= 0 then
+          vim.notify('Could not determine merge base', vim.log.levels.ERROR)
+          return
+        end
+        local changed_files = vim.fn.systemlist('git diff --name-only ' .. merge_base .. ' HEAD')
+        if #changed_files == 0 then
+          vim.notify('No changed files in this branch', vim.log.levels.INFO)
+          return
+        end
+        local pickers = require 'telescope.pickers'
+        local finders = require 'telescope.finders'
+        local conf = require('telescope.config').values
+        pickers
+          .new({}, {
+            prompt_title = 'Changed Files (Branch)',
+            finder = finders.new_table { results = changed_files },
+            sorter = conf.generic_sorter {},
+            previewer = conf.file_previewer {},
+          })
+          :find()
+      end, { desc = '[G]it Changed [F]iles (Branch)' })
 
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>F', function()

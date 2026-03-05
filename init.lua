@@ -208,6 +208,11 @@ vim.keymap.set('n', '<leader>sx', ':close<CR>', { desc = 'Closes the current spl
 -- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
 
 vim.keymap.set('v', '<leader>y', '"+y')
+vim.keymap.set('n', '<leader>Yc', function()
+  local filename = vim.fn.expand '%:t'
+  vim.fn.setreg('+', filename)
+  vim.notify('Copied: ' .. filename)
+end, { desc = '[Y]ank [C]urrent file name' })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`

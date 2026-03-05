@@ -459,16 +459,19 @@ require('lazy').setup({
             n = {
               ['<leader>yp'] = function(prompt_bufnr)
                 local entry = require('telescope.actions.state').get_selected_entry()
-                if entry and entry.path then
-                  vim.fn.setreg('+', entry.path)
-                  vim.notify('Yanked path: ' .. entry.path)
+                if entry then
+                  local path = entry.path or entry.filename or entry.value
+                  if path then
+                    vim.fn.system('pbcopy', path)
+                    vim.notify('Yanked path: ' .. path)
+                  end
                 end
               end,
               ['<leader>yf'] = function(prompt_bufnr)
                 local entry = require('telescope.actions.state').get_selected_entry()
                 if entry and entry.path then
                   local name = vim.fn.fnamemodify(entry.path, ':t:r')
-                  vim.fn.setreg('+', name)
+                  vim.fn.system('pbcopy', name)
                   vim.notify('Yanked name: ' .. name)
                 end
               end,

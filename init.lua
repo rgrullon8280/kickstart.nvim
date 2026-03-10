@@ -295,6 +295,21 @@ require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
+  {
+    dir = '~/workspace/github.com/rgrullon8280/snowvim',
+    ft = 'sql',
+    config = function()
+      require('snowvim').setup({
+        profile = 'dev',
+        query_dir = '~/queries',
+        results = {
+          split = 'horizontal',
+          height = 15,
+        },
+      })
+    end,
+  },
+
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
   -- keys can be used to configure plugin behavior/loading/etc.
@@ -886,7 +901,7 @@ require('lazy').setup({
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
         -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
+        local disable_filetypes = { c = true, cpp = true, sql = true }
         if disable_filetypes[vim.bo[bufnr].filetype] then
           return nil
         else
@@ -939,6 +954,7 @@ require('lazy').setup({
         opts = {},
       },
       'folke/lazydev.nvim',
+      { 'saghen/blink.compat', version = '*', opts = {} },
       -- {
       --   'Exafunction/codeium.nvim',
       --   dependencies = { 'nvim-lua/plenary.nvim' },
@@ -1000,9 +1016,13 @@ require('lazy').setup({
       },
 
       sources = {
-        default = { 'lsp', 'path', 'snippets', 'lazydev' },
+        default = { 'lsp', 'path', 'snippets', 'lazydev', 'snowvim' },
         providers = {
           lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
+          snowvim = {
+            name = 'snowvim',
+            module = 'snowvim.blink',
+          },
         },
       },
 

@@ -299,14 +299,21 @@ require('lazy').setup({
     dir = '~/workspace/github.com/rgrullon8280/snowvim',
     ft = 'sql',
     config = function()
-      require('snowvim').setup({
+      require('snowvim').setup {
         profile = 'dev',
         query_dir = '~/queries',
         results = {
           split = 'horizontal',
           height = 15,
+          header = {
+            profile = false,
+            connection = false,
+            query_id = true,
+            duration = true,
+            rows_shown = true,
+          },
         },
-      })
+      }
     end,
   },
 
@@ -1207,7 +1214,9 @@ require('lazy').setup({
       local harpoon = require 'harpoon'
       harpoon:setup()
 
-      vim.keymap.set('n', '<leader>a', function() harpoon:list():add() end, { desc = 'Harpoon [A]dd file' })
+      vim.keymap.set('n', '<leader>a', function()
+        harpoon:list():add()
+      end, { desc = 'Harpoon [A]dd file' })
       vim.keymap.set('n', '<leader>h', function()
         local win = vim.api.nvim_get_current_win()
         local buf = vim.api.nvim_win_get_buf(win)
@@ -1219,10 +1228,18 @@ require('lazy').setup({
         end
       end, { desc = '[H]arpoon menu' })
 
-      vim.keymap.set('n', '<leader>1', function() harpoon:list():select(1) end, { desc = 'Harpoon file [1]' })
-      vim.keymap.set('n', '<leader>2', function() harpoon:list():select(2) end, { desc = 'Harpoon file [2]' })
-      vim.keymap.set('n', '<leader>3', function() harpoon:list():select(3) end, { desc = 'Harpoon file [3]' })
-      vim.keymap.set('n', '<leader>4', function() harpoon:list():select(4) end, { desc = 'Harpoon file [4]' })
+      vim.keymap.set('n', '<leader>1', function()
+        harpoon:list():select(1)
+      end, { desc = 'Harpoon file [1]' })
+      vim.keymap.set('n', '<leader>2', function()
+        harpoon:list():select(2)
+      end, { desc = 'Harpoon file [2]' })
+      vim.keymap.set('n', '<leader>3', function()
+        harpoon:list():select(3)
+      end, { desc = 'Harpoon file [3]' })
+      vim.keymap.set('n', '<leader>4', function()
+        harpoon:list():select(4)
+      end, { desc = 'Harpoon file [4]' })
     end,
   },
 

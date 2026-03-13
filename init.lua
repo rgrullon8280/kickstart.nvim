@@ -208,6 +208,7 @@ vim.keymap.set('n', '<leader>sx', ':close<CR>', { desc = 'Closes the current spl
 -- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
 
 vim.keymap.set('v', '<leader>y', '"+y')
+vim.keymap.set('v', '/', '/\\%V', { desc = 'Search within visual selection' })
 vim.keymap.set('n', '<leader>Yc', function()
   local filename = vim.fn.expand '%:t'
   vim.fn.setreg('+', filename)
@@ -314,6 +315,8 @@ require('lazy').setup({
           },
         },
       }
+      vim.keymap.set('n', '<leader>sX', '<cmd>SnowvimExportCSV<cr>', { silent = true, desc = 'Export Snowvim CSV' })
+      pcall(vim.keymap.del, 'n', '<leader>sx')
     end,
   },
 
@@ -525,6 +528,30 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>fA', function()
         builtin.find_files { hidden = true, no_ignore = true }
       end, { desc = 'Search [A]ll files (including hidden/ignored)' })
+      vim.keymap.set('n', '<leader>fd', function()
+        local pickers = require 'telescope.pickers'
+        local finders = require 'telescope.finders'
+        local conf = require('telescope.config').values
+        local actions = require 'telescope.actions'
+        local action_state = require 'telescope.actions.state'
+        pickers
+          .new({}, {
+            prompt_title = 'Find Directories',
+            finder = finders.new_oneshot_job({ 'find', '.', '-type', 'd', '-not', '-path', '*/.*' }, {}),
+            sorter = conf.generic_sorter {},
+            attach_mappings = function(_, _)
+              actions.select_default:replace(function(prompt_bufnr)
+                local entry = action_state.get_selected_entry()
+                actions.close(prompt_bufnr)
+                if entry then
+                  vim.cmd('Oil ' .. vim.fn.fnameescape(entry[1]))
+                end
+              end)
+              return true
+            end,
+          })
+          :find()
+      end, { desc = '[F]ind [D]irectories' })
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       vim.keymap.set('n', '<leader>fw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>fs', builtin.live_grep, { desc = '[S]earch by [G]rep' })
@@ -543,6 +570,25 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>gc', builtin.git_commits, { desc = '[G]it [C]ommits' })
       vim.keymap.set('n', '<leader>gs', builtin.git_status, { desc = '[G]it [S]tatus' })
       vim.keymap.set('n', '<leader>gb', builtin.git_branches, { desc = '[G]it [B]ranches' })
+      vim.keymap.set('n', '<leader>gC', function()
+        local parent = vim.fn.system('git rev-parse --abbrev-ref HEAD@{upstream} 2>/dev/null'):gsub('%s+', '')
+        if parent == '' then
+          parent = 'main'
+        end
+        local diff_files = vim.fn.systemlist('git diff --name-only ' .. parent .. '...HEAD')
+        if #diff_files == 0 or (diff_files[1] and diff_files[1]:match '^fatal') then
+          vim.notify('No changed files vs ' .. parent, vim.log.levels.INFO)
+          return
+        end
+        require('telescope.pickers')
+          .new({}, {
+            prompt_title = 'Changed files vs ' .. parent,
+            finder = require('telescope.finders').new_table { results = diff_files },
+            sorter = require('telescope.config').values.generic_sorter {},
+            previewer = require('telescope.config').values.file_previewer {},
+          })
+          :find()
+      end, { desc = '[G]it [C]hanged files vs parent branch' })
       vim.keymap.set('n', '<leader>gtb', '<cmd>Gitsigns toggle_current_line_blame<CR>', { desc = '[G]it [T]oggle [B]lame' })
       vim.keymap.set('n', '<leader>gf', function()
         local merge_base = vim.fn.systemlist('git merge-base HEAD main')[1]

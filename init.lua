@@ -305,7 +305,7 @@ require('lazy').setup({
         query_dir = '~/queries',
         results = {
           split = 'horizontal',
-          height = 15,
+          height = 30,
           header = {
             profile = false,
             connection = false,

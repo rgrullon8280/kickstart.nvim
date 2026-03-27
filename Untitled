@@ -1,0 +1,4 @@
+select *
+from foo
+qualify row_number() over (order by 1) = 1
+@mystage/path

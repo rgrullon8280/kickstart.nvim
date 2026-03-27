@@ -843,6 +843,13 @@ require('lazy').setup({
       --  When you add blink.cmp, luasnip, etc. Neovim now has *more* capabilities.
       --  So, we create new capabilities with blink.cmp, and then broadcast that to the servers.
       local capabilities = require('blink.cmp').get_lsp_capabilities()
+      local lspconfig_util = require 'lspconfig.util'
+      local queries_dir = vim.fs.normalize((vim.env.HOME or '') .. '/queries') .. '/'
+
+      local function is_queries_sql(fname)
+        local normalized = vim.fs.normalize(fname)
+        return normalized:find(queries_dir, 1, true) == 1
+      end
 
       -- Enable the following language servers
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
@@ -871,7 +878,16 @@ require('lazy').setup({
             },
           },
         },
-        sqls = {},
+        sqls = {
+          single_file_support = false,
+          root_dir = function(fname)
+            if is_queries_sql(fname) then
+              return nil
+            end
+
+            return lspconfig_util.root_pattern 'config.yml'(fname) or vim.fs.dirname(fname)
+          end,
+        },
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -964,8 +980,15 @@ require('lazy').setup({
           }
         end
       end,
+      formatters = {
+        sqlfluff = {
+          args = { 'fix', '--dialect', 'snowflake', '-' },
+          require_cwd = false,
+        },
+      },
       formatters_by_ft = {
         lua = { 'stylua' },
+        sql = { 'sqlfluff' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
@@ -1189,7 +1212,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'go', 'python' },
+      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'go', 'python', 'sql' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -1197,9 +1220,9 @@ require('lazy').setup({
         -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
         --  If you are experiencing weird indenting issues, add the language to
         --  the list of additional_vim_regex_highlighting and disabled languages for indent.
-        additional_vim_regex_highlighting = { 'ruby' },
+        additional_vim_regex_highlighting = { 'ruby', 'sql' },
       },
-      indent = { enable = true, disable = { 'ruby' } },
+      indent = { enable = true, disable = { 'ruby', 'sql' } },
     },
     -- There are additional nvim-treesitter modules that you can use to interact
     -- with nvim-treesitter. You should go explore a few and see what interests you:

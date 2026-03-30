@@ -352,6 +352,21 @@ require('lazy').setup({
         topdelete = { text = '‾' },
         changedelete = { text = '~' },
       },
+      on_attach = function(bufnr)
+        local gitsigns = require 'gitsigns'
+
+        local function map(lhs, rhs, desc)
+          vim.keymap.set('n', lhs, rhs, { buffer = bufnr, desc = desc })
+        end
+
+        map('<leader>[', function()
+          gitsigns.nav_hunk 'prev'
+        end, 'Jump to previous git change')
+
+        map('<leader>]', function()
+          gitsigns.nav_hunk 'next'
+        end, 'Jump to next git change')
+      end,
     },
   },
 

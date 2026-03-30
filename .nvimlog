@@ -1,3 +1,9 @@
 WRN 2026-03-27T08:03:57.952 ?.82582    server_start:193: Failed to start server: operation not permitted: /var/folders/ls/yx7dsnq945s__gkgxl1hm_c40000gp/T/nvim.rgrullon/KX4c68/nvim.82582.0
 WRN 2026-03-27T08:03:57.952 ?.82583    server_start:193: Failed to start server: operation not permitted: /var/folders/ls/yx7dsnq945s__gkgxl1hm_c40000gp/T/nvim.rgrullon/dGzo4Y/nvim.82583.0
 WRN 2026-03-27T10:18:25.011 ?.94866    server_start:193: Failed to start server: operation not permitted: /var/folders/ls/yx7dsnq945s__gkgxl1hm_c40000gp/T/nvim.rgrullon/Q7eNW3/nvim.94866.0
+WRN 2026-03-30T14:06:50.823 ?.22385    server_start:193: Failed to start server: operation not permitted: /var/folders/ls/yx7dsnq945s__gkgxl1hm_c40000gp/T/nvim.rgrullon/esXnKI/nvim.22385.0
+WRN 2026-03-30T14:07:21.379 ?.22508    server_start:193: Failed to start server: operation not permitted: /var/folders/ls/yx7dsnq945s__gkgxl1hm_c40000gp/T/nvim.rgrullon/GyuIPB/nvim.22508.0
+WRN 2026-03-30T14:08:50.329 ?.22683    server_start:193: Failed to start server: operation not permitted: /var/folders/ls/yx7dsnq945s__gkgxl1hm_c40000gp/T/nvim.rgrullon/AiBPOQ/nvim.22683.0
+WRN 2026-03-30T14:09:45.079 ?.22804    server_start:193: Failed to start server: operation not permitted: /var/folders/ls/yx7dsnq945s__gkgxl1hm_c40000gp/T/nvim.rgrullon/H5pt8f/nvim.22804.0
+WRN 2026-03-30T14:12:29.187 ?.23070    server_start:193: Failed to start server: operation not permitted: /var/folders/ls/yx7dsnq945s__gkgxl1hm_c40000gp/T/nvim.rgrullon/hgUJDi/nvim.23070.0
+WRN 2026-03-30T14:17:10.817 ?.23270    server_start:193: Failed to start server: operation not permitted: /var/folders/ls/yx7dsnq945s__gkgxl1hm_c40000gp/T/nvim.rgrullon/B3n27g/nvim.23270.0
